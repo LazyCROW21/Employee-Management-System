@@ -13,19 +13,97 @@
           <i class="fa-solid fa-bars"></i>
         </button>
         <span class="h4 ml-2">Admin Panel</span>
-        <hr>
-        
+        <hr />
+        <side-nav-item v-for="(sideNavItem, i) in sideNavItems" :data="sideNavItem" v-bind:key="i" />
       </div>
     </div>
   </transition>
 </template>
 
 <script>
+import SideNavItem from "@/components/SideNavItem.vue";
+
 export default {
+  components: {
+    "side-nav-item": SideNavItem,
+  },
   name: "NavBar",
   data() {
     return {
       showNavBar: false,
+      sideNavItems: [
+        {
+          title: "Home",
+          id: 'sn-home',
+          icon: 'fas fa-home',
+          items: [
+            {
+              text: "Dashboard",
+              url: "/",
+            },
+          ],
+        },
+        {
+          title: "Employees",
+          id: 'sn-emp',
+          icon: "fas fa-users",
+          items: [
+            {
+              text: "View Employees",
+              url: "/emp_view",
+            },
+            {
+              text: "Add Employee",
+              url: "/emp_add",
+            },
+          ],
+        },
+        {
+          title: "Department",
+          id: 'sn-dept',
+          icon: "fas fa-building",
+          items: [
+            {
+              text: "View Departments",
+              url: "/dept_view",
+            },
+            {
+              text: "Add Department",
+              url: "/dept_add",
+            },
+          ],
+        },
+        {
+          title: "Staff Leaves",
+          id: 'sn-sl',
+          icon: "fas fa-walking",
+          items: [
+            {
+              text: "New requests",
+              url: "/sl_new",
+            },
+            {
+              text: "Past requests",
+              url: "/sl_past",
+            },
+          ],
+        },
+        {
+          title: "Notice",
+          id: 'sn-notice',
+          icon: "fas fa-scroll",
+          items: [
+            {
+              text: "New Notice",
+              url: "/sn_new",
+            },
+            {
+              text: "Past Notice",
+              url: "/sn_past",
+            },
+          ],
+        },
+      ],
     };
   },
   methods: {
@@ -72,7 +150,7 @@ navbar {
 }
 .slide-enter-to {
   /* left: 0; */
-  
+
   transform: translateX(0%);
 }
 .slide-leave-from {

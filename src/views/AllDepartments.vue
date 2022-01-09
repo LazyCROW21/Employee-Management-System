@@ -1,19 +1,16 @@
 <template>
   <NavBar />
   <div class="container-fluid">
-    <h1 class="text-center mt-2">All Employees</h1>
+    <h1 class="text-center mt-2">All Departments</h1>
     <hr />
     <div class="p-2">
       <div
         class="row p-2"
-        v-for="employee in employees"
-        v-bind:key="employee['id']"
+        v-for="dept in departments"
+        v-bind:key="dept['id']"
       >
-        <div class="col-1">{{ employee["id"] }}</div>
-        <div class="col-2">{{ employee["first_name"] }}</div>
-        <div class="col-2">{{ employee["last_name"] }}</div>
-        <div class="col-2">{{ employee["phone"] }}</div>
-        <div class="col-3">{{ employee["email"] }}</div>
+        <div class="col-1">{{ dept["id"] }}</div>
+        <div class="col-9">{{ dept["dept_name"] }}</div>
         <div class="col-2">
           <div class="btn-group btn-group-sm" role="group">
             <button type="button" class="btn btn-primary">
@@ -23,8 +20,8 @@
               type="button"
               class="btn btn-info"
               data-bs-toggle="modal"
-              data-bs-target="#editEMPModal"
-              @click="editEMP(employee)"
+              data-bs-target="#editDeptModal"
+              @click="editDept(dept)"
             >
               <i class="fas fa-edit"></i>
             </button>
@@ -32,8 +29,8 @@
               type="button"
               class="btn btn-danger"
               data-bs-toggle="modal"
-              data-bs-target="#deleteEMPModal"
-              @click="deleteEMP(employee)"
+              data-bs-target="#deleteDeptModal"
+              @click="deleteDept(dept)"
             >
               <i class="fas fa-minus-circle"></i>
             </button>
@@ -47,15 +44,15 @@
   <!-- Edit Modal -->
   <div
     class="modal fade"
-    id="editEMPModal"
+    id="editDeptModal"
     tabindex="-1"
-    aria-labelledby="editEMPModalLabel"
+    aria-labelledby="editDeptModalLabel"
     aria-hidden="true"
   >
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="editEMPModalLabel">Edit Employee</h5>
+          <h5 class="modal-title" id="editDeptModalLabel">Edit Department</h5>
           <button
             type="button"
             class="btn-close"
@@ -68,7 +65,7 @@
             <tbody>
               <tr>
                 <td>ID</td>
-                <td>: {{ this.editModalEmp["id"] }}</td>
+                <td>: {{ this.editModalDept['id'] }}</td>
               </tr>
               <tr>
                 <td>First Name</td>
@@ -76,37 +73,7 @@
                   <input
                     type="text"
                     class="form-control"
-                    v-model="this.editModalEmp['first_name']"
-                  />
-                </td>
-              </tr>
-              <tr>
-                <td>Last Name</td>
-                <td>
-                  <input
-                    type="text"
-                    class="form-control"
-                    v-model="this.editModalEmp['last_name']"
-                  />
-                </td>
-              </tr>
-              <tr>
-                <td>Phone</td>
-                <td>
-                  <input
-                    type="text"
-                    class="form-control"
-                    v-model="this.editModalEmp['phone']"
-                  />
-                </td>
-              </tr>
-              <tr>
-                <td>Email</td>
-                <td>
-                  <input
-                    type="email"
-                    class="form-control"
-                    v-model="this.editModalEmp['email']"
+                    v-model="this.editModalDept['dept_name']"
                   />
                 </td>
               </tr>
@@ -130,15 +97,15 @@
   <!-- Delete Modal -->
   <div
     class="modal fade"
-    id="deleteEMPModal"
+    id="deleteDeptModal"
     tabindex="-1"
-    aria-labelledby="deleteEMPModalLabel"
+    aria-labelledby="deleteDeptModalLabel"
     aria-hidden="true"
   >
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="deleteEMPModalLabel">
+          <h5 class="modal-title" id="deleteDeptModalLabel">
             Are you sure you want to delete?
           </h5>
           <button
@@ -153,23 +120,11 @@
             <tbody>
               <tr>
                 <td>ID</td>
-                <td>: {{ this.delModalEmp["id"] }}</td>
+                <td>: {{ this.delModalDept["id"] }}</td>
               </tr>
               <tr>
                 <td>First Name</td>
-                <td>: {{ this.delModalEmp["first_name"] }}</td>
-              </tr>
-              <tr>
-                <td>Last Name</td>
-                <td>: {{ this.delModalEmp["last_name"] }}</td>
-              </tr>
-              <tr>
-                <td>Phone</td>
-                <td>: {{ this.delModalEmp["phone"] }}</td>
-              </tr>
-              <tr>
-                <td>Email</td>
-                <td>: {{ this.delModalEmp["email"] }}</td>
+                <td>: {{ this.delModalDept["dept_name"] }}</td>
               </tr>
             </tbody>
           </table>
@@ -193,44 +148,43 @@
 import NavBar from "@/components/NavBar.vue";
 
 export default {
-  name: "AllEmployees",
+  name: "AllDepartments",
   components: {
     NavBar,
   },
   data() {
     return {
-      editModalEmp: {
+      editModalDept: {
         id: -1,
-        first_name: "",
-        last_name: "",
-        phone: "",
-        email: "",
+        dept_name: "",
       },
-      delModalEmp: {
+      delModalDept: {
         id: -1,
-        first_name: "",
-        last_name: "",
-        phone: "",
-        email: "",
+        dept_name: "",
       },
-      employees: [
+      departments: [
         {
           id: 1,
-          first_name: "Hardik",
-          last_name: "Kardam",
-          phone: "7567496109",
-          email: "hardikkardam21@gmail.com",
+          dept_name: "Human Resource",
+        },
+        {
+          id: 2,
+          dept_name: "Business",
+        },
+        {
+          id: 3,
+          dept_name: "Marketing",
         },
       ],
     };
   },
   methods: {
-    deleteEMP(employee) {
-      this.delModalEmp = employee;
+    deleteDept(dept) {
+      this.delModalDept = dept;
       //   console.log(employee);
     },
-    editEMP(employee) {
-      this.editModalEmp = {...employee};
+    editDept(dept) {
+      this.editModalDept = {...dept};
     },
   },
 };

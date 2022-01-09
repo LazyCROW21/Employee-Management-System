@@ -74,18 +74,14 @@ export default {
           ],
         },
         {
-          title: "Staff Leaves",
+          title: "Staff",
           id: 'sn-sl',
           icon: "fas fa-walking",
           items: [
             {
-              text: "New requests",
-              url: "/sl_new",
-            },
-            {
-              text: "Past requests",
-              url: "/sl_past",
-            },
+              text: "Staff Leaves",
+              url: "/staff_leaves",
+            }
           ],
         },
         {

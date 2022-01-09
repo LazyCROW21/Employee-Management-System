@@ -1,19 +1,18 @@
 <template>
   <NavBar />
   <div class="container-fluid">
-    <h1 class="text-center mt-2">All Employees</h1>
+    <h1 class="text-center mt-2">Past Notices</h1>
     <hr />
     <div class="p-2">
       <div
         class="row p-2"
-        v-for="employee in employees"
-        v-bind:key="employee['id']"
+        v-for="notice in pastNotices"
+        v-bind:key="notice['id']"
       >
-        <div class="col-1">{{ employee["id"] }}</div>
-        <div class="col-2">{{ employee["first_name"] }}</div>
-        <div class="col-2">{{ employee["last_name"] }}</div>
-        <div class="col-2">{{ employee["phone"] }}</div>
-        <div class="col-3">{{ employee["email"] }}</div>
+        <div class="col-1">{{ notice["id"] }}</div>
+        <div class="col-3">{{ notice["subject"] }}</div>
+        <div class="col-2">{{ notice["date"] }}</div>
+        <div class="col-4">{{ notice["description"] }}</div>
         <div class="col-2">
           <div class="btn-group btn-group-sm" role="group">
             <button type="button" class="btn btn-primary">
@@ -23,8 +22,8 @@
               type="button"
               class="btn btn-info"
               data-bs-toggle="modal"
-              data-bs-target="#editEMPModal"
-              @click="editEMP(employee)"
+              data-bs-target="#editNoticeModal"
+              @click="editNotice(notice)"
             >
               <i class="fas fa-edit"></i>
             </button>
@@ -32,8 +31,8 @@
               type="button"
               class="btn btn-danger"
               data-bs-toggle="modal"
-              data-bs-target="#deleteEMPModal"
-              @click="deleteEMP(employee)"
+              data-bs-target="#deleteNoticeModal"
+              @click="deleteNotice(notice)"
             >
               <i class="fas fa-minus-circle"></i>
             </button>
@@ -47,15 +46,15 @@
   <!-- Edit Modal -->
   <div
     class="modal fade"
-    id="editEMPModal"
+    id="editNoticeModal"
     tabindex="-1"
-    aria-labelledby="editEMPModalLabel"
+    aria-labelledby="editNoticeModalLabel"
     aria-hidden="true"
   >
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="editEMPModalLabel">Edit Employee</h5>
+          <h5 class="modal-title" id="editNoticeModalLabel">Edit Notice</h5>
           <button
             type="button"
             class="btn-close"
@@ -68,46 +67,37 @@
             <tbody>
               <tr>
                 <td>ID</td>
-                <td>: {{ this.editModalEmp["id"] }}</td>
+                <td>: {{ this.editModalNotice["id"] }}</td>
               </tr>
               <tr>
-                <td>First Name</td>
+                <td>Subject</td>
                 <td>
                   <input
                     type="text"
                     class="form-control"
-                    v-model="this.editModalEmp['first_name']"
+                    v-model="this.editModalNotice['subject']"
                   />
                 </td>
               </tr>
               <tr>
-                <td>Last Name</td>
+                <td>Date</td>
                 <td>
                   <input
+                    type="date"
+                    class="form-control"
+                    v-model="this.editModalNotice['date']"
+                  />
+                </td>
+              </tr>
+              <tr>
+                <td>Description</td>
+                <td>
+                  <textarea
                     type="text"
                     class="form-control"
-                    v-model="this.editModalEmp['last_name']"
-                  />
-                </td>
-              </tr>
-              <tr>
-                <td>Phone</td>
-                <td>
-                  <input
-                    type="text"
-                    class="form-control"
-                    v-model="this.editModalEmp['phone']"
-                  />
-                </td>
-              </tr>
-              <tr>
-                <td>Email</td>
-                <td>
-                  <input
-                    type="email"
-                    class="form-control"
-                    v-model="this.editModalEmp['email']"
-                  />
+                    v-model="this.editModalNotice['description']"
+                  >
+                  </textarea>
                 </td>
               </tr>
             </tbody>
@@ -130,15 +120,15 @@
   <!-- Delete Modal -->
   <div
     class="modal fade"
-    id="deleteEMPModal"
+    id="deleteNoticeModal"
     tabindex="-1"
-    aria-labelledby="deleteEMPModalLabel"
+    aria-labelledby="deleteNoticeModalLabel"
     aria-hidden="true"
   >
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="deleteEMPModalLabel">
+          <h5 class="modal-title" id="deleteNoticeModalLabel">
             Are you sure you want to delete?
           </h5>
           <button
@@ -153,23 +143,19 @@
             <tbody>
               <tr>
                 <td>ID</td>
-                <td>: {{ this.delModalEmp["id"] }}</td>
+                <td>: {{ this.delModalNotice["id"] }}</td>
               </tr>
               <tr>
-                <td>First Name</td>
-                <td>: {{ this.delModalEmp["first_name"] }}</td>
+                <td>Subject</td>
+                <td>: {{ this.delModalNotice["subject"] }}</td>
               </tr>
               <tr>
-                <td>Last Name</td>
-                <td>: {{ this.delModalEmp["last_name"] }}</td>
+                <td>Date</td>
+                <td>: {{ this.delModalNotice["date"] }}</td>
               </tr>
               <tr>
-                <td>Phone</td>
-                <td>: {{ this.delModalEmp["phone"] }}</td>
-              </tr>
-              <tr>
-                <td>Email</td>
-                <td>: {{ this.delModalEmp["email"] }}</td>
+                <td>Description</td>
+                <td>: {{ this.delModalNotice["description"] }}</td>
               </tr>
             </tbody>
           </table>
@@ -193,44 +179,42 @@
 import NavBar from "@/components/NavBar.vue";
 
 export default {
-  name: "AllEmployees",
+  name: "PastNotices",
   components: {
     NavBar,
   },
   data() {
     return {
-      editModalEmp: {
+      editModalNotice: {
         id: -1,
-        first_name: "",
-        last_name: "",
-        phone: "",
-        email: "",
+        subject: "",
+        date: "",
+        description: "",
       },
-      delModalEmp: {
+      delModalNotice: {
         id: -1,
-        first_name: "",
-        last_name: "",
-        phone: "",
-        email: "",
+        subject: "",
+        date: "",
+        description: "",
       },
-      employees: [
+      pastNotices: [
         {
           id: 1,
-          first_name: "Hardik",
-          last_name: "Kardam",
-          phone: "7567496109",
-          email: "hardikkardam21@gmail.com",
+          subject: "Free Gifts",
+          date: "25-Dec-2021",
+          description:
+            "Free gift that you can collect from office for the christmas! Enjoy!",
         },
       ],
     };
   },
   methods: {
-    deleteEMP(employee) {
-      this.delModalEmp = employee;
-      //   console.log(employee);
+    deleteNotice(notice) {
+      this.delModalNotice = notice;
+      //   console.log(Noticeloyee);
     },
-    editEMP(employee) {
-      this.editModalEmp = {...employee};
+    editNotice(notice) {
+      this.editModalNotice = { ...notice };
     },
   },
 };

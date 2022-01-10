@@ -55,7 +55,7 @@
       <div class="row p-2 align-items-center">
         <div class="col-6">Department</div>
         <div class="col-6">
-          <select class="form-select" v-model="this.addEmp['dept_id']">
+          <select class="form-select" v-model="this.addEmp['dept_id']"  @change="checkDept">
             <option value="1">One</option>
             <option value="2">Two</option>
             <option value="3">Three</option>
@@ -65,7 +65,7 @@
       <div class="row p-2 align-items-center">
         <div class="col-6">Designation</div>
         <div class="col-6">
-          <select class="form-select" v-model="this.addEmp['designation_id']">
+          <select class="form-select" v-model="this.addEmp['designation_id']" @change="checkDesg">
             <option value="1">One</option>
             <option value="2">Two</option>
             <option value="3">Three</option>
@@ -127,6 +127,17 @@ export default {
     };
   },
   methods: {
+    checkError() {
+      const errKeys = Object.keys(this.inputErrors);
+      for(let i=0; i<errKeys.length; i++) {
+        if(this.inputErrors[errKeys[i]]) {
+          // console.log(this.inputErrors[errKeys[i]]);
+          this.isFormValid = false;
+          return;
+        }
+      }
+      this.isFormValid = true;
+    },
     checkFirstName() {
       if(this.addEmp.first_name) {
         this.addEmp.first_name = this.addEmp.first_name.trim()
@@ -138,6 +149,7 @@ export default {
       } else {
         this.inputErrors.first_name = 'First name is required';
       }
+      this.checkError();
     },
     checkLastName() {
       if(this.addEmp.last_name) {
@@ -150,6 +162,7 @@ export default {
       } else {
         this.inputErrors.last_name = 'Last name is required';
       }
+      this.checkError();
     },
     checkPhone() {
       const phoneRegex = /^[0-9]{10}$/;
@@ -165,6 +178,7 @@ export default {
       } else {
         this.inputErrors.phone = 'Phone is required';
       }
+      this.checkError();
     },
     checkEmail() {
       const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
@@ -180,10 +194,11 @@ export default {
       } else {
         this.inputErrors.email = 'Email is required';
       }
+      this.checkError();
     },
     checkDept() {
       if(this.addEmp.dept_id) {
-        if(!isNaN(this.addEmp.dept_id)) {
+        if(isNaN(this.addEmp.dept_id)) {
           this.inputErrors.dept_id = 'Invalid department selected';
         } else {
           this.inputErrors.dept_id = false;
@@ -191,10 +206,11 @@ export default {
       } else {
         this.inputErrors.dept_id = 'Department is required';
       }
+      this.checkError();
     },
     checkDesg() {
       if(this.addEmp.designation_id) {
-        if(!isNaN(this.addEmp.designation_id)) {
+        if(isNaN(this.addEmp.designation_id)) {
           this.inputErrors.designation_id = 'Invalid designation selected';
         } else {
           this.inputErrors.designation_id = false;
@@ -202,10 +218,11 @@ export default {
       } else {
         this.inputErrors.designation_id = 'Designation is required';
       }
+      this.checkError();
     },
     checkSalary() {
       if(this.addEmp.salary) {
-        if(!isNaN(this.addEmp.salary)) {
+        if(this.addEmp.salary < 0) {
           this.inputErrors.salary = 'Invalid salary input';
         } else {
           this.inputErrors.salary = false;
@@ -213,9 +230,10 @@ export default {
       } else {
         this.inputErrors.salary = 'Ssalary is required';
       }
+      this.checkError();
     },
     submitEmployee() {
-      
+      this.checkError();
     }
   },
 };

@@ -35,7 +35,7 @@
       </div>
       <div class="row p-2 align-items-center">
         <div class="offset-6 col-6">
-          <button class="btn btn-primary w-100">Add Department</button>
+          <button class="btn btn-primary w-100">Add Notice</button>
         </div>
       </div>
     </div>

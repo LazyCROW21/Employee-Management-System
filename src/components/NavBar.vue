@@ -15,6 +15,9 @@
         <span class="h4 ml-2">Admin Panel</span>
         <hr />
         <side-nav-item v-for="(sideNavItem, i) in sideNavItems" :data="sideNavItem" v-bind:key="i" />
+        <div class="m-2">
+          <button class="btn btn-danger w-100 text-start">Log out</button>
+        </div>
       </div>
     </div>
   </transition>
@@ -73,32 +76,32 @@ export default {
             },
           ],
         },
-        {
-          title: "Staff",
-          id: 'sn-sl',
-          icon: "fas fa-walking",
-          items: [
-            {
-              text: "Staff Leaves",
-              url: "/staff_leaves",
-            }
-          ],
-        },
-        {
-          title: "Notice",
-          id: 'sn-notice',
-          icon: "fas fa-scroll",
-          items: [
-            {
-              text: "New Notice",
-              url: "/sn_new",
-            },
-            {
-              text: "Past Notice",
-              url: "/sn_past",
-            },
-          ],
-        },
+        // {
+        //   title: "Staff",
+        //   id: 'sn-sl',
+        //   icon: "fas fa-walking",
+        //   items: [
+        //     {
+        //       text: "Staff Leaves",
+        //       url: "/staff_leaves",
+        //     }
+        //   ],
+        // },
+        // {
+        //   title: "Notice",
+        //   id: 'sn-notice',
+        //   icon: "fas fa-scroll",
+        //   items: [
+        //     {
+        //       text: "New Notice",
+        //       url: "/sn_new",
+        //     },
+        //     {
+        //       text: "Past Notice",
+        //       url: "/sn_past",
+        //     },
+        //   ],
+        // },
       ],
     };
   },

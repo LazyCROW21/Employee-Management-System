@@ -35,21 +35,21 @@ const routes = [
     name: 'Add Department',
     component: () => import('../views/AddDepartment.vue')
   },
-  {
-    path: '/staff_leaves',
-    name: 'Staff Leaves',
-    component: () => import('../views/StaffLeaves.vue')
-  },
-  {
-    path: '/sn_new',
-    name: 'New Notice',
-    component: () => import('../views/NewNotice.vue')
-  },
-  {
-    path: '/sn_past',
-    name: 'Past Notices',
-    component: () => import('../views/PastNotices.vue')
-  }
+  // {
+  //   path: '/staff_leaves',
+  //   name: 'Staff Leaves',
+  //   component: () => import('../views/StaffLeaves.vue')
+  // },
+  // {
+  //   path: '/sn_new',
+  //   name: 'New Notice',
+  //   component: () => import('../views/NewNotice.vue')
+  // },
+  // {
+  //   path: '/sn_past',
+  //   name: 'Past Notices',
+  //   component: () => import('../views/PastNotices.vue')
+  // }
 ]
 
 const router = createRouter({

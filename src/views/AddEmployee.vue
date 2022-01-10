@@ -45,6 +45,38 @@
         </div>
       </div>
       <div class="row p-2 align-items-center">
+        <div class="col-6">Department</div>
+        <div class="col-6">
+          <select class="form-select" v-model="this.addEmp['dept_id']">
+            <option value="1">One</option>
+            <option value="2">Two</option>
+            <option value="3">Three</option>
+          </select>
+        </div>
+      </div>
+      <div class="row p-2 align-items-center">
+        <div class="col-6">Designation</div>
+        <div class="col-6">
+          <select class="form-select" v-model="this.addEmp['designation_id']">
+            <option value="1">One</option>
+            <option value="2">Two</option>
+            <option value="3">Three</option>
+          </select>
+        </div>
+      </div>
+      <div class="row p-2 align-items-center">
+        <div class="col-6">Salary</div>
+        <div class="col-6">
+          <input
+            type="number"
+            step="0.01"
+            min="12000"
+            class="form-control"
+            v-model="this.addEmp['salary']"
+          />
+        </div>
+      </div>
+      <div class="row p-2 align-items-center">
         <div class="offset-6 col-6">
           <button class="btn btn-primary w-100">Add Employee</button>
         </div>
@@ -68,12 +100,13 @@ export default {
         last_name: "",
         phone: "",
         email: "",
-      }
+        dept_id: "",
+        designation_id: "",
+        salary: 12000
+      },
     };
   },
-  methods: {
-
-  },
+  methods: {},
 };
 </script>
 

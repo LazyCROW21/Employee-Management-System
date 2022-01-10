@@ -5,7 +5,7 @@
     <hr />
     <div class="p-2">
       <div
-        class="row p-2"
+        class="deptrow row p-2"
         v-for="dept in departments"
         v-bind:key="dept['id']"
       >
@@ -79,6 +79,29 @@
               </tr>
             </tbody>
           </table>
+          <hr>
+          <div class="container-fluid">
+            <div class="row align-items-center">
+              <div class="col-11">
+                <input type="text" class="form-control" placeholder="Add Designation">
+              </div>
+              <div class="col-1">
+                <button class="btn btn-sm btn-success"><i class="far fa-plus-square"></i></button>
+              </div>
+            </div>
+            <hr class="text-primary">
+            <div class="row border p-1 align-items-center">
+              <div class="col-10">
+                Manager
+              </div>
+              <div class="col-1">
+                <button class="btn btn-sm btn-info"><i class="fas fa-edit"></i></button>
+              </div>
+              <div class="col-1">
+                <button class="btn btn-sm btn-danger"><i class="fas fa-minus-circle"></i></button>
+              </div>
+            </div>
+          </div>
         </div>
         <div class="modal-footer">
           <button
@@ -196,11 +219,11 @@ h1,
 hr {
   color: white;
 }
-.row {
+.deptrow {
   color: white;
   border-radius: 1rem;
 }
-.row:hover {
+.deptrow:hover {
   color: white;
   background-color: #3c4a58;
 }

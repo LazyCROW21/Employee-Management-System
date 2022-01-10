@@ -16,7 +16,13 @@
         <div class="col-3">{{ employee["email"] }}</div>
         <div class="col-2">
           <div class="btn-group btn-group-sm" role="group">
-            <button type="button" class="btn btn-primary">
+            <button
+              type="button"
+              class="btn btn-primary"
+              data-bs-toggle="modal"
+              data-bs-target="#viewEMPModal"
+              @click="viewEMP(employee)"
+            >
               <i class="fas fa-eye"></i>
             </button>
             <button
@@ -44,6 +50,77 @@
   </div>
 
   <!-- Modal -->
+  <!-- View Modal -->
+  <div
+    class="modal fade"
+    id="viewEMPModal"
+    tabindex="-1"
+    aria-labelledby="viewEMPModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="viewEMPModalLabel">Employee Details</h5>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
+        </div>
+        <div class="modal-body">
+          <table class="table">
+            <tbody>
+              <tr>
+                <td>ID</td>
+                <td>: {{ this.viewModalEmp["id"] }}</td>
+              </tr>
+              <tr>
+                <td>First Name</td>
+                <td>: {{ this.viewModalEmp["first_name"] }}</td>
+              </tr>
+              <tr>
+                <td>Last Name</td>
+                <td>: {{ this.viewModalEmp["last_name"] }}</td>
+              </tr>
+              <tr>
+                <td>Phone</td>
+                <td>: {{ this.viewModalEmp["phone"] }}</td>
+              </tr>
+              <tr>
+                <td>Email</td>
+                <td>: {{ this.viewModalEmp["email"] }}</td>
+              </tr>
+              <tr>
+                <td>Department</td>
+                <td>: {{ this.viewModalEmp["dept"] }}</td>
+              </tr>
+              <tr>
+                <td>Designation</td>
+                <td>: {{ this.viewModalEmp["designation"] }}</td>
+              </tr>
+              <tr>
+                <td>Salary</td>
+                <td>: {{ this.viewModalEmp["salary"] }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <!-- <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            data-bs-dismiss="modal"
+          >
+            Close
+          </button>
+          <button type="button" class="btn btn-danger">Confirm</button>
+        </div> -->
+      </div>
+    </div>
+  </div>
+
   <!-- Edit Modal -->
   <div
     class="modal fade"
@@ -107,6 +184,44 @@
                     type="email"
                     class="form-control"
                     v-model="this.editModalEmp['email']"
+                  />
+                </td>
+              </tr>
+              <tr>
+                <td>Department</td>
+                <td>
+                  <select
+                    class="form-select"
+                    v-model="this.editModalEmp['dept_id']"
+                  >
+                    <option value="1">One</option>
+                    <option value="2">Two</option>
+                    <option value="3">Three</option>
+                  </select>
+                </td>
+              </tr>
+              <tr>
+                <td>Designation</td>
+                <td>
+                  <select
+                    class="form-select"
+                    v-model="this.editModalEmp['designation_id']"
+                  >
+                    <option value="1">One</option>
+                    <option value="2">Two</option>
+                    <option value="3">Three</option>
+                  </select>
+                </td>
+              </tr>
+              <tr>
+                <td>Salary</td>
+                <td>
+                  <input
+                    type="number"
+                    min="12000"
+                    step="0.01"
+                    class="form-control"
+                    v-model="this.editModalEmp['salary']"
                   />
                 </td>
               </tr>
@@ -199,12 +314,25 @@ export default {
   },
   data() {
     return {
+      viewModalEmp: {
+        id: -1,
+        first_name: "",
+        last_name: "",
+        phone: "",
+        email: "",
+        dept: "Dept 1",
+        designation: "Design 1",
+        salary: 12000,
+      },
       editModalEmp: {
         id: -1,
         first_name: "",
         last_name: "",
         phone: "",
         email: "",
+        dept: "Dept 1",
+        designation: "Design 1",
+        salary: 12000,
       },
       delModalEmp: {
         id: -1,
@@ -220,17 +348,23 @@ export default {
           last_name: "Kardam",
           phone: "7567496109",
           email: "hardikkardam21@gmail.com",
+          dept: "Dept 1",
+          designation: "Design 1",
+          salary: 12000,
         },
       ],
     };
   },
   methods: {
+    viewEMP(employee) {
+      this.viewModalEmp = employee;
+    },
     deleteEMP(employee) {
       this.delModalEmp = employee;
       //   console.log(employee);
     },
     editEMP(employee) {
-      this.editModalEmp = {...employee};
+      this.editModalEmp = { ...employee };
     },
   },
 };

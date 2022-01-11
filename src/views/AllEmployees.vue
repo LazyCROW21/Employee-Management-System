@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 <template>
   <NavBar />
   <div class="container-fluid">
@@ -39,7 +40,7 @@
               class="btn btn-danger"
               data-bs-toggle="modal"
               data-bs-target="#deleteEMPModal"
-              @click="deleteEMP(employee)"
+              @click="confDeleteEMP(employee)"
             >
               <i class="fas fa-minus-circle"></i>
             </button>
@@ -94,11 +95,13 @@
               </tr>
               <tr>
                 <td>Department</td>
-                <td>: {{ this.viewModalEmp["dept"] }}</td>
+                <td>: {{ this.departments[this.viewModalEmp["dept_id"]] }}</td>
               </tr>
               <tr>
                 <td>Designation</td>
-                <td>: {{ this.viewModalEmp["designation"] }}</td>
+                <td>
+                  : {{ this.deptdesg[this.viewModalEmp["designation_id"]] }}
+                </td>
               </tr>
               <tr>
                 <td>Salary</td>
@@ -211,10 +214,18 @@
                     v-model="this.editModalEmp['dept_id']"
                     @change="checkDept"
                   >
-                    <option value="1">One</option>
-                    <option value="2">Two</option>
-                    <option value="3">Three</option>
+                    <option
+                      class="text-dark"
+                      v-for="dept in Object.keys(departments)"
+                      v-bind:key="dept"
+                      :value="dept"
+                    >
+                      {{ departments[dept] }}
+                    </option>
                   </select>
+                  <p class="err-text" v-if="this.inputErrors.dept_id">
+                    {{ this.inputErrors.dept_id }}
+                  </p>
                 </td>
               </tr>
               <tr>
@@ -225,10 +236,18 @@
                     v-model="this.editModalEmp['designation_id']"
                     @change="checkDesg"
                   >
-                    <option value="1">One</option>
-                    <option value="2">Two</option>
-                    <option value="3">Three</option>
+                    <option
+                      class="text-dark"
+                      v-for="desg in deptdesgSelect"
+                      v-bind:key="desg.id"
+                      :value="desg.id"
+                    >
+                      {{ desg.designation }}
+                    </option>
                   </select>
+                  <p class="err-text" v-if="this.inputErrors.designation_id">
+                    {{ this.inputErrors.designation_id }}
+                  </p>
                 </td>
               </tr>
               <tr>
@@ -249,6 +268,9 @@
               </tr>
             </tbody>
           </table>
+          <p v-if="this.empEditResp" :class="this.empEditResp.cls">
+            {{ this.empEditResp.txt }}
+          </p>
         </div>
         <div class="modal-footer">
           <button
@@ -261,7 +283,7 @@
           <button
             type="button"
             class="btn btn-success"
-            @click="saveEmployee"
+            @click="saveEMPChanges"
             :disabled="!isFormValid"
           >
             Save
@@ -326,7 +348,15 @@
           >
             Close
           </button>
-          <button type="button" class="btn btn-danger">Confirm</button>
+          <button
+            type="button"
+            class="btn btn-danger"
+            data-bs-dismiss="modal"
+            data-bs-target="#deleteEMPModal"
+            @click="deleteEmployee"
+          >
+            Confirm
+          </button>
         </div>
       </div>
     </div>
@@ -335,6 +365,9 @@
 
 <script>
 import NavBar from "@/components/NavBar.vue";
+import EmployeeService from "@/services/EmployeeService.js";
+import DepartmentService from "@/services/DepartmentService.js";
+import DeptDesgService from "@/services/DeptDesgService.js";
 
 export default {
   name: "AllEmployees",
@@ -359,8 +392,8 @@ export default {
         last_name: "",
         phone: "",
         email: "",
-        dept: "Dept 1",
-        designation: "Design 1",
+        dept_id: -1,
+        designation_id: -1,
         salary: 12000,
       },
       editModalEmp: {
@@ -369,8 +402,8 @@ export default {
         last_name: "",
         phone: "",
         email: "",
-        dept: "Dept 1",
-        designation: "Design 1",
+        dept_id: -1,
+        designation_id: -1,
         salary: 12000,
       },
       delModalEmp: {
@@ -380,41 +413,130 @@ export default {
         phone: "",
         email: "",
       },
-      employees: [
-        {
-          id: 1,
-          first_name: "Hardik",
-          last_name: "Kardam",
-          phone: "7567496109",
-          email: "hardikkardam21@gmail.com",
-          dept: "Dept 1",
-          designation: "Design 1",
-          salary: 12000,
-        },
-      ],
+      employees: [],
+      departments: {},
+      deptdesg: {},
+      deptdesgSelect: [],
+      empEditResp: false,
     };
   },
+  beforeMount: function () {
+    EmployeeService.getAllEmployees()
+      .then(async (resp) => {
+        if (resp.status == 200) {
+          let datastr = await resp.text();
+          this.employees = JSON.parse(datastr);
+        } else {
+          // show error here
+        }
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+    DepartmentService.getAllDepartments().then(async (resp) => {
+      if (resp.status == 200) {
+        let datastr = await resp.text();
+        let deptArr = JSON.parse(datastr);
+        for (let i = 0; i < deptArr.length; i++) {
+          this.departments[deptArr[i].id] = deptArr[i].dept_name;
+        }
+      } else {
+        // show error here
+      }
+    });
+    DeptDesgService.getAllDeptDesg().then(async (resp) => {
+      if (resp.status == 200) {
+        let datastr = await resp.text();
+        let deptdesgArr = JSON.parse(datastr);
+        for (let i = 0; i < deptdesgArr.length; i++) {
+          this.deptdesg[deptdesgArr[i].id] = {
+            id: deptdesgArr[i].id,
+            designation: deptdesgArr[i].designation,
+            dept_id: deptdesgArr[i].dept_id,
+          };
+        }
+      } else {
+        // show error here
+      }
+    });
+  },
   methods: {
+    changeDesgSelect() {
+      this.deptdesgSelect = [];
+      let desgKeys = Object.keys(this.deptdesg);
+      for (let i = 0; i < desgKeys.length; i++) {
+        if (this.deptdesg[desgKeys[i]].dept_id == this.editModalEmp.dept_id) {
+          this.deptdesgSelect.push(this.deptdesg[desgKeys[i]]);
+        }
+      }
+      this.checkError();
+    },
     viewEMP(employee) {
       this.viewModalEmp = employee;
+      this.empEditResp = false;
     },
-    deleteEMP(employee) {
+    confDeleteEMP(employee) {
       this.delModalEmp = employee;
-      //   console.log(employee);
+    },
+    deleteEmployee() {
+      EmployeeService.deleteEmployee(this.delModalEmp.id)
+        .then(async (resp) => {
+          if (resp.status == 200) {
+            alert("Employee deleted!");
+            this.employees = this.employees.filter(
+              (emp) => emp.id != this.delModalEmp.id
+            );
+          } else {
+            alert("Error!");
+          }
+        })
+        .catch((err) => {
+          console.error(err);
+        });
     },
     editEMP(employee) {
       this.editModalEmp = { ...employee };
+      this.changeDesgSelect();
+    },
+    saveEMPChanges() {
+      if (this.checkError()) {
+        return;
+      }
+      console.log(this.editModalEmp);
+      EmployeeService.updateEmployee(this.editModalEmp.id, this.editModalEmp)
+        .then(async (resp) => {
+          if (resp.status == 200) {
+            for (let i = 0; i < this.employees.length; i++) {
+              if (this.employees[i].id == this.editModalEmp.id) {
+                this.employees[i] = { ...this.editModalEmp };
+                break;
+              }
+            }
+            this.empEditResp = {
+              cls: "text-success",
+              txt: "Changes saved!",
+            };
+          } else {
+            this.empEditResp = {
+              cls: "text-danger",
+              txt: "error in updating!",
+            };
+          }
+        })
+        .catch((err) => {
+          console.error(err);
+        });
     },
     checkError() {
       const errKeys = Object.keys(this.inputErrors);
       for (let i = 0; i < errKeys.length; i++) {
         if (this.inputErrors[errKeys[i]]) {
-          // console.log(this.inputErrors[errKeys[i]]);
           this.isFormValid = false;
-          return;
+          return true;
         }
       }
       this.isFormValid = true;
+      return false;
     },
     checkFirstName() {
       if (this.editModalEmp.first_name) {
@@ -485,7 +607,8 @@ export default {
       this.checkError();
     },
     checkDept() {
-      if (this.editModalEmp.dept_id) {
+      this.changeDesgSelect();
+      if (this.editModalEmp.dept_id != null) {
         if (isNaN(this.editModalEmp.dept_id)) {
           this.inputErrors.dept_id = "Invalid department selected";
         } else {
@@ -494,10 +617,12 @@ export default {
       } else {
         this.inputErrors.dept_id = "Department is required";
       }
+      this.checkDesg();
+      // this.isFormValid = false;
       this.checkError();
     },
     checkDesg() {
-      if (this.editModalEmp.designation_id) {
+      if (this.editModalEmp.designation_id != null) {
         if (isNaN(this.editModalEmp.designation_id)) {
           this.inputErrors.designation_id = "Invalid designation selected";
         } else {
@@ -516,14 +641,8 @@ export default {
           this.inputErrors.salary = false;
         }
       } else {
-        this.inputErrors.salary = "Ssalary is required";
+        this.inputErrors.salary = "Salary is required";
       }
-      this.checkError();
-    },
-    saveEmployee() {
-      this.checkError();
-    },
-    editEmployee() {
       this.checkError();
     },
   },

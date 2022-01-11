@@ -154,7 +154,11 @@
                     type="text"
                     class="form-control"
                     v-model="this.editModalEmp['first_name']"
+                    @keyup="checkFirstName"
                   />
+                  <p class="err-text" v-if="this.inputErrors.first_name">
+                    {{ this.inputErrors.first_name }}
+                  </p>
                 </td>
               </tr>
               <tr>
@@ -164,7 +168,11 @@
                     type="text"
                     class="form-control"
                     v-model="this.editModalEmp['last_name']"
+                    @keyup="checkLastName"
                   />
+                  <p class="err-text" v-if="this.inputErrors.last_name">
+                    {{ this.inputErrors.last_name }}
+                  </p>
                 </td>
               </tr>
               <tr>
@@ -174,7 +182,11 @@
                     type="text"
                     class="form-control"
                     v-model="this.editModalEmp['phone']"
+                    @keyup="checkPhone"
                   />
+                  <p class="err-text" v-if="this.inputErrors.phone">
+                    {{ this.inputErrors.phone }}
+                  </p>
                 </td>
               </tr>
               <tr>
@@ -184,7 +196,11 @@
                     type="email"
                     class="form-control"
                     v-model="this.editModalEmp['email']"
+                    @keyup="checkEmail"
                   />
+                  <p class="err-text" v-if="this.inputErrors.email">
+                    {{ this.inputErrors.email }}
+                  </p>
                 </td>
               </tr>
               <tr>
@@ -193,6 +209,7 @@
                   <select
                     class="form-select"
                     v-model="this.editModalEmp['dept_id']"
+                    @change="checkDept"
                   >
                     <option value="1">One</option>
                     <option value="2">Two</option>
@@ -206,6 +223,7 @@
                   <select
                     class="form-select"
                     v-model="this.editModalEmp['designation_id']"
+                    @change="checkDesg"
                   >
                     <option value="1">One</option>
                     <option value="2">Two</option>
@@ -222,7 +240,11 @@
                     step="0.01"
                     class="form-control"
                     v-model="this.editModalEmp['salary']"
+                    @keyup="checkSalary"
                   />
+                  <p class="err-text" v-if="this.inputErrors.salary">
+                    {{ this.inputErrors.salary }}
+                  </p>
                 </td>
               </tr>
             </tbody>
@@ -236,7 +258,14 @@
           >
             Close
           </button>
-          <button type="button" class="btn btn-success">Save</button>
+          <button
+            type="button"
+            class="btn btn-success"
+            @click="saveEmployee"
+            :disabled="!isFormValid"
+          >
+            Save
+          </button>
         </div>
       </div>
     </div>
@@ -314,6 +343,16 @@ export default {
   },
   data() {
     return {
+      isFormValid: true,
+      inputErrors: {
+        first_name: false,
+        last_name: false,
+        phone: false,
+        email: false,
+        dept_id: false,
+        designation_id: false,
+        salary: false,
+      },
       viewModalEmp: {
         id: -1,
         first_name: "",
@@ -366,6 +405,127 @@ export default {
     editEMP(employee) {
       this.editModalEmp = { ...employee };
     },
+    checkError() {
+      const errKeys = Object.keys(this.inputErrors);
+      for (let i = 0; i < errKeys.length; i++) {
+        if (this.inputErrors[errKeys[i]]) {
+          // console.log(this.inputErrors[errKeys[i]]);
+          this.isFormValid = false;
+          return;
+        }
+      }
+      this.isFormValid = true;
+    },
+    checkFirstName() {
+      if (this.editModalEmp.first_name) {
+        this.editModalEmp.first_name = this.editModalEmp.first_name.trim();
+        if (
+          this.editModalEmp.first_name.length < 0 ||
+          this.editModalEmp.first_name.length > 64
+        ) {
+          this.inputErrors.first_name = "First name should 1 to 64 characters";
+        } else {
+          this.inputErrors.first_name = false;
+        }
+      } else {
+        this.inputErrors.first_name = "First name is required";
+      }
+      this.checkError();
+    },
+    checkLastName() {
+      if (this.editModalEmp.last_name) {
+        this.editModalEmp.last_name = this.editModalEmp.last_name.trim();
+        if (
+          this.editModalEmp.last_name.length < 1 ||
+          this.editModalEmp.last_name.length > 64
+        ) {
+          this.inputErrors.last_name = "Last name should 1 to 64 characters";
+        } else {
+          this.inputErrors.last_name = false;
+        }
+      } else {
+        this.inputErrors.last_name = "Last name is required";
+      }
+      this.checkError();
+    },
+    checkPhone() {
+      const phoneRegex = /^[0-9]{10}$/;
+      if (this.editModalEmp.phone) {
+        this.editModalEmp.phone = this.editModalEmp.phone.trim();
+        if (this.editModalEmp.phone.length != 10) {
+          this.inputErrors.phone = "Phone should be 10 digits";
+        } else if (!phoneRegex.test(this.editModalEmp.phone)) {
+          this.inputErrors.phone = "Invalid phone number";
+        } else {
+          this.inputErrors.phone = false;
+        }
+      } else {
+        this.inputErrors.phone = "Phone is required";
+      }
+      this.checkError();
+    },
+    checkEmail() {
+      const emailRegex =
+        /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+      if (this.editModalEmp.email) {
+        this.editModalEmp.email = this.editModalEmp.email.trim();
+        if (
+          this.editModalEmp.email.length < 1 ||
+          this.editModalEmp.email.length > 240
+        ) {
+          this.inputErrors.email = "Email should be under 240 characters";
+        } else if (!emailRegex.test(this.editModalEmp.email)) {
+          this.inputErrors.email = "Invalid email format";
+        } else {
+          this.inputErrors.email = false;
+        }
+      } else {
+        this.inputErrors.email = "Email is required";
+      }
+      this.checkError();
+    },
+    checkDept() {
+      if (this.editModalEmp.dept_id) {
+        if (isNaN(this.editModalEmp.dept_id)) {
+          this.inputErrors.dept_id = "Invalid department selected";
+        } else {
+          this.inputErrors.dept_id = false;
+        }
+      } else {
+        this.inputErrors.dept_id = "Department is required";
+      }
+      this.checkError();
+    },
+    checkDesg() {
+      if (this.editModalEmp.designation_id) {
+        if (isNaN(this.editModalEmp.designation_id)) {
+          this.inputErrors.designation_id = "Invalid designation selected";
+        } else {
+          this.inputErrors.designation_id = false;
+        }
+      } else {
+        this.inputErrors.designation_id = "Designation is required";
+      }
+      this.checkError();
+    },
+    checkSalary() {
+      if (this.editModalEmp.salary) {
+        if (this.editModalEmp.salary < 0) {
+          this.inputErrors.salary = "Invalid salary input";
+        } else {
+          this.inputErrors.salary = false;
+        }
+      } else {
+        this.inputErrors.salary = "Ssalary is required";
+      }
+      this.checkError();
+    },
+    saveEmployee() {
+      this.checkError();
+    },
+    editEmployee() {
+      this.checkError();
+    },
   },
 };
 </script>
@@ -389,5 +549,9 @@ tr td:first-child {
 }
 tr td:nth-child(2) {
   color: darkblue;
+}
+.err-text {
+  color: red;
+  font-style: italic;
 }
 </style>

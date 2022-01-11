@@ -65,40 +65,61 @@
             <tbody>
               <tr>
                 <td>ID</td>
-                <td>: {{ this.editModalDept['id'] }}</td>
+                <td>: {{ this.editModalDept["id"] }}</td>
               </tr>
               <tr>
-                <td>First Name</td>
+                <td>Department Name</td>
                 <td>
                   <input
                     type="text"
                     class="form-control"
                     v-model="this.editModalDept['dept_name']"
+                    @keyup="checkDeptName"
                   />
+                  <p class="err-text" v-if="this.inputErrors.dept_name">
+                    {{ this.inputErrors.dept_name }}
+                  </p>
                 </td>
               </tr>
             </tbody>
           </table>
-          <hr>
+          <hr />
           <div class="container-fluid">
             <div class="row align-items-center">
               <div class="col-11">
-                <input type="text" class="form-control" placeholder="Add Designation">
+                <input
+                  type="text"
+                  class="form-control"
+                  placeholder="Add Designation"
+                  @keyup="checkDesg"
+                  v-model="this.newDesg"
+                />
+                <p v-if="this.newDesgError" class="err-text">
+                  {{ this.newDesgError }}
+                </p>
               </div>
               <div class="col-1">
-                <button class="btn btn-sm btn-success"><i class="far fa-plus-square"></i></button>
+                <button
+                  class="btn btn-sm btn-success"
+                  :disabled="!isNewDesgValid"
+                  @click="addNewDesg"
+                >
+                  <i class="far fa-plus-square"></i>
+                </button>
               </div>
             </div>
-            <hr class="text-primary">
+            <hr class="text-primary" />
             <div class="row border p-1 align-items-center">
-              <div class="col-10">
-                Manager
+              <div class="col-10">Manager</div>
+              <div class="col-1">
+                <button class="btn btn-sm btn-info">
+                  <i class="fas fa-edit"></i>
+                </button>
               </div>
               <div class="col-1">
-                <button class="btn btn-sm btn-info"><i class="fas fa-edit"></i></button>
-              </div>
-              <div class="col-1">
-                <button class="btn btn-sm btn-danger"><i class="fas fa-minus-circle"></i></button>
+                <button class="btn btn-sm btn-danger">
+                  <i class="fas fa-minus-circle"></i>
+                </button>
               </div>
             </div>
           </div>
@@ -111,7 +132,14 @@
           >
             Close
           </button>
-          <button type="button" class="btn btn-success">Save</button>
+          <button
+            type="button"
+            class="btn btn-success"
+            :disabled="!isFormValid"
+            @click="saveDepartment"
+          >
+            Save
+          </button>
         </div>
       </div>
     </div>
@@ -146,7 +174,7 @@
                 <td>: {{ this.delModalDept["id"] }}</td>
               </tr>
               <tr>
-                <td>First Name</td>
+                <td>Department Name</td>
                 <td>: {{ this.delModalDept["dept_name"] }}</td>
               </tr>
             </tbody>
@@ -177,6 +205,13 @@ export default {
   },
   data() {
     return {
+      isFormValid: false,
+      isNewDesgValid: false,
+      newDesg: "",
+      newDesgError: null,
+      inputErrors: {
+        dept_name: false,
+      },
       editModalDept: {
         id: -1,
         dept_name: "",
@@ -207,8 +242,53 @@ export default {
       //   console.log(employee);
     },
     editDept(dept) {
-      this.editModalDept = {...dept};
+      this.editModalDept = { ...dept };
     },
+    checkError() {
+      const errKeys = Object.keys(this.inputErrors);
+      for (let i = 0; i < errKeys.length; i++) {
+        if (this.inputErrors[errKeys[i]]) {
+          // console.log(this.inputErrors[errKeys[i]]);
+          this.isFormValid = false;
+          return;
+        }
+      }
+      this.isFormValid = true;
+    },
+    checkDeptName() {
+      if (this.editModalDept.dept_name) {
+        let inp = this.editModalDept.dept_name.trim();
+        if (inp.length < 1 || inp.length > 64) {
+          this.inputErrors.dept_name =
+            "Department name should be 1 to 64 characters";
+        } else {
+          this.inputErrors.dept_name = false;
+        }
+      } else {
+        this.inputErrors.dept_name = "Department name is required";
+      }
+      this.checkError();
+    },
+    saveDepartment() {
+      //check if name already exists
+      this.checkError();
+    },
+    checkDesg() {
+      if (this.newDesg) {
+        let inp = this.newDesg.trim();
+        if (inp.length < 1 || inp.length > 64) {
+          this.newDesgError = "Designation title should 1 to 64 characters";
+          this.isNewDesgValid = false;
+        } else {
+          this.newDesgError = false;
+          this.isNewDesgValid = true;
+        }
+      } else {
+        this.newDesgError = "Designation title is required";
+        this.isNewDesgValid = false;
+      }
+    },
+    addNewDesg() {},
   },
 };
 </script>
@@ -232,5 +312,9 @@ tr td:first-child {
 }
 tr td:nth-child(2) {
   color: darkblue;
+}
+.err-text {
+  color: red;
+  font-style: italic;
 }
 </style>

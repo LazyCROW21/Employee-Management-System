@@ -16,7 +16,7 @@
         <hr />
         <side-nav-item v-for="(sideNavItem, i) in sideNavItems" :data="sideNavItem" v-bind:key="i" />
         <div class="m-2">
-          <button class="btn btn-danger w-100 text-start">Log out</button>
+          <button class="btn btn-danger w-100 text-start" @click="logout">Log out</button>
         </div>
       </div>
     </div>
@@ -25,6 +25,7 @@
 
 <script>
 import SideNavItem from "@/components/SideNavItem.vue";
+import AuthService from "@/services/AuthService.js";
 
 export default {
   components: {
@@ -109,6 +110,16 @@ export default {
     toggleSideNav() {
       this.showNavBar = !this.showNavBar;
     },
+    logout() {
+      AuthService.logout().then(async (resp) => {
+        if (resp.status != 200) {
+          alert("Error in logging out from server !");
+        }
+      });
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('refreshToken');
+      this.$router.push({path: '/login'});
+    }
   },
 };
 </script>

@@ -9,6 +9,7 @@
         <div class="col-6">
           <input
             type="text"
+            id="firstNameInput"
             class="form-control"
             v-model="this.addEmp['first_name']"
             @keyup="checkFirstName"
@@ -23,6 +24,7 @@
         <div class="col-6">
           <input
             type="text"
+            id="lastNameInput"
             class="form-control"
             v-model="this.addEmp['last_name']"
             @keyup="checkLastName"
@@ -37,6 +39,7 @@
         <div class="col-6">
           <input
             type="text"
+            id="phoneInput"
             class="form-control"
             v-model="this.addEmp['phone']"
             @keyup="checkPhone"
@@ -51,6 +54,7 @@
         <div class="col-6">
           <input
             type="text"
+            id="emailInput"
             class="form-control"
             v-model="this.addEmp['email']"
             @keyup="checkEmail"
@@ -64,6 +68,7 @@
         <div class="col-6">Department</div>
         <div class="col-6">
           <select
+            id="deptInput"
             class="form-select"
             v-model="this.addEmp['dept_id']"
             @change="checkDept"
@@ -81,6 +86,7 @@
         <div class="col-6">Designation</div>
         <div class="col-6">
           <select
+            id="desgInput"
             class="form-select"
             v-model="this.addEmp['designation_id']"
             @change="checkDesg"
@@ -103,6 +109,7 @@
         <div class="col-6">
           <input
             type="number"
+            id="salaryInput"
             step="0.01"
             min="12000"
             class="form-control"
@@ -117,6 +124,7 @@
       <div class="row p-2 align-items-center">
         <div class="offset-6 col-6">
           <button
+            id="addEMPBtn"
             class="btn btn-primary w-100"
             @click="submitEmployee"
             :disabled="!isFormValid"

@@ -27,7 +27,7 @@
           <label for="floatingPassword">Password</label>
         </div>
         <p class="text-danger" v-if="this.invalid">Invalid username/password</p>
-        <button class="btn btn-outline-dark mt-4" @click="login">Login</button>
+        <button id="loginBtn" class="btn btn-outline-dark mt-4" @click="login">Login</button>
       </div>
     </div>
   </div>

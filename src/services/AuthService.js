@@ -10,6 +10,15 @@ class AuthService {
             body: JSON.stringify(data)
         });
     }
+    static logout() {
+        return fetch(base_url+'/logout', {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
+                'Content-type': 'application/json'
+            }
+        });
+    }
 }
 
 module.exports = AuthService;

@@ -219,11 +219,11 @@
                   >
                     <option
                       class="text-dark"
-                      v-for="dept in Object.keys(departments)"
-                      v-bind:key="dept"
-                      :value="dept"
+                      v-for="dept in departments"
+                      v-bind:key="dept.id"
+                      :value="dept.id"
                     >
-                      {{ departments[dept] }}
+                      {{ dept.dept_name }}
                     </option>
                   </select>
                   <p class="err-text" v-if="this.inputErrors.dept_id">
@@ -456,10 +456,9 @@ export default {
   methods: {
     changeDesgSelect() {
       this.deptdesgSelect = [];
-      let desgKeys = Object.keys(this.deptdesg);
-      for (let i = 0; i < desgKeys.length; i++) {
-        if (this.deptdesg[desgKeys[i]].dept_id == this.editModalEmp.dept_id) {
-          this.deptdesgSelect.push(this.deptdesg[desgKeys[i]]);
+      for (let i = 0; i < this.deptdesg.length; i++) {
+        if (this.deptdesg[i].dept_id == this.editModalEmp.dept_id) {
+          this.deptdesgSelect.push(this.deptdesg[i]);
         }
       }
       this.checkError();

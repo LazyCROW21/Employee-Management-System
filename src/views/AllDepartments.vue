@@ -281,6 +281,11 @@ export default {
   components: {
     NavBar,
   },
+  created(){
+    if(!localStorage.getItem('accessToken') || !localStorage.getItem('refreshToken')) {
+      this.$router.push({path: '/login'});
+    }
+  },
   data() {
     return {
       isFormValid: false,

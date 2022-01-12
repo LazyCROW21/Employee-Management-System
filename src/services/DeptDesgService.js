@@ -13,6 +13,7 @@ class DeptDesgService {
         return fetch(base_url+'deptdesg', {
             method: 'POST',
             headers: {
+                'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
                 'Content-type': 'application/json'
             },
             body: JSON.stringify(data)
@@ -22,6 +23,7 @@ class DeptDesgService {
         return fetch(base_url+'deptdesg/'+id, {
             method: 'PATCH',
             headers: {
+                'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
                 'Content-type': 'application/json'
             },
             body: JSON.stringify(data)
@@ -31,6 +33,7 @@ class DeptDesgService {
         return fetch(base_url+'deptdesg/'+id, {
             method: 'DELETE',
             headers: {
+                'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
                 'Content-type': 'application/json'
             }
         });

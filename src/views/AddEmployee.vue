@@ -85,11 +85,15 @@
             v-model="this.addEmp['designation_id']"
             @change="checkDesg"
           >
-            <option v-for="desg in deptdesg[this.addEmp['dept_id']]" :key="desg.id" :value="desg.id">
+            <option
+              v-for="desg in deptdesg[this.addEmp['dept_id']]"
+              :key="desg.id"
+              :value="desg.id"
+            >
               {{ desg.designation }}
             </option>
           </select>
-            <p class="err-text" v-if="this.inputErrors.designation_id">
+          <p class="err-text" v-if="this.inputErrors.designation_id">
             {{ this.inputErrors.designation_id }}
           </p>
         </div>
@@ -186,11 +190,22 @@ export default {
       }
     });
   },
+  created() {
+    if (
+      !localStorage.getItem("accessToken") ||
+      !localStorage.getItem("refreshToken")
+    ) {
+      this.$router.push({ path: "/login" });
+    }
+  },
   methods: {
     checkError() {
       const errKeys = Object.keys(this.inputErrors);
       for (let i = 0; i < errKeys.length; i++) {
-        if (this.inputErrors[errKeys[i]] == null || this.inputErrors[errKeys[i]]) {
+        if (
+          this.inputErrors[errKeys[i]] == null ||
+          this.inputErrors[errKeys[i]]
+        ) {
           // console.log(this.inputErrors[errKeys[i]]);
           this.isFormValid = false;
           return true;

@@ -5,6 +5,7 @@ class EmployeeService {
         return fetch(base_url+'employee', {
             method: 'GET',
             headers: {
+                'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
                 'Content-type': 'application/json'
             }
         });
@@ -13,6 +14,7 @@ class EmployeeService {
         return fetch(base_url+'employee', {
             method: 'POST',
             headers: {
+                'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
                 'Content-type': 'application/json'
             },
             body: JSON.stringify(data)
@@ -22,6 +24,7 @@ class EmployeeService {
         return fetch(base_url+'employee/'+id, {
             method: 'PATCH',
             headers: {
+                'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
                 'Content-type': 'application/json'
             },
             body: JSON.stringify(data)
@@ -31,6 +34,7 @@ class EmployeeService {
         return fetch(base_url+'employee/'+id, {
             method: 'DELETE',
             headers: {
+                'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
                 'Content-type': 'application/json'
             }
         });

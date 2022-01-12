@@ -41,6 +41,11 @@ export default {
   data() {
     return { invalid: false, email: "", pwd: "" };
   },
+  created(){
+    if(localStorage.getItem('accessToken') && localStorage.getItem('refreshToken')) {
+      this.$router.push({path: '/'});
+    }
+  },
   methods: {
     login() {
       var data = {
@@ -50,7 +55,9 @@ export default {
       AuthService.login(data).then(async (resp) => {
           if (resp.status == 200) {
             let data = await resp.text();
-            console.log(data);
+            let dataObj = JSON.parse(data);
+            localStorage.setItem('accessToken', dataObj.accessToken);
+            localStorage.setItem('refreshToken', dataObj.refreshToken);
             this.$router.push({path: '/'});
           } else {
             this.invalid = true;

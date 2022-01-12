@@ -13,7 +13,13 @@
         <div class="col-9">{{ dept["dept_name"] }}</div>
         <div class="col-2">
           <div class="btn-group btn-group-sm" role="group">
-            <button type="button" class="btn btn-primary">
+            <button
+              type="button"
+              class="btn btn-primary"
+              data-bs-toggle="modal"
+              data-bs-target="#viewDeptModal"
+              @click="openViewModal(dept)"
+            >
               <i class="fas fa-eye"></i>
             </button>
             <button
@@ -41,6 +47,53 @@
   </div>
 
   <!-- Modal -->
+  <!-- View Modal -->
+  <div
+    class="modal fade"
+    id="viewDeptModal"
+    tabindex="-1"
+    aria-labelledby="viewDeptModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="viewDeptModalLabel">Department Details</h5>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
+        </div>
+        <div class="modal-body">
+          <table class="table">
+            <tbody>
+              <tr>
+                <td>ID</td>
+                <td>: {{ this.viewModalDept["id"] }}</td>
+              </tr>
+              <tr>
+                <td>Department Name</td>
+                <td>: {{ this.viewModalDept["dept_name"] }}</td>
+              </tr>
+              <tr>
+                <td>Designations</td>
+                <td>
+                  <ul class="list-group list-group-flush">
+                    <li class="list-group-item" v-for="desg in viewModalDept['desginations']" v-bind:key="desg.id">
+                      {{desg.designation}}
+                    </li>
+                  </ul>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Edit Modal -->
   <div
     class="modal fade"
@@ -197,6 +250,8 @@
 
 <script>
 import NavBar from "@/components/NavBar.vue";
+import DepartmentService from "@/services/DepartmentService.js";
+import DeptDesgService from "@/services/DeptDesgService.js";
 
 export default {
   name: "AllDepartments",
@@ -212,6 +267,11 @@ export default {
       inputErrors: {
         dept_name: false,
       },
+      viewModalDept: {
+        id: -1,
+        dept_name: "",
+        desginations: [],
+      },
       editModalDept: {
         id: -1,
         dept_name: "",
@@ -220,23 +280,38 @@ export default {
         id: -1,
         dept_name: "",
       },
-      departments: [
-        {
-          id: 1,
-          dept_name: "Human Resource",
-        },
-        {
-          id: 2,
-          dept_name: "Business",
-        },
-        {
-          id: 3,
-          dept_name: "Marketing",
-        },
-      ],
+      departments: [],
+      deptdesg: [],
     };
   },
+  beforeMount() {
+    DepartmentService.getAllDepartments().then(async (resp) => {
+      if (resp.status == 200) {
+        let datastr = await resp.text();
+        this.departments = JSON.parse(datastr);
+      } else {
+        // show error here
+      }
+    });
+    DeptDesgService.getAllDeptDesg().then(async (resp) => {
+      if (resp.status == 200) {
+        let datastr = await resp.text();
+        this.deptdesg = JSON.parse(datastr);
+      } else {
+        // show error here
+      }
+    });
+  },
   methods: {
+    openViewModal(dept) {
+      this.viewModalDept = dept;
+      this.viewModalDept.desginations = [];
+      for (let i = 0; i < this.deptdesg.length; i++) {
+        if (this.deptdesg[i].dept_id == dept.id) {
+          this.viewModalDept.desginations.push(this.deptdesg[i]);
+        }
+      }
+    },
     deleteDept(dept) {
       this.delModalDept = dept;
       //   console.log(employee);

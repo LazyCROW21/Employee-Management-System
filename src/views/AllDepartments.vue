@@ -58,7 +58,9 @@
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="viewDeptModalLabel">Department Details</h5>
+          <h5 class="modal-title" id="viewDeptModalLabel">
+            Department Details
+          </h5>
           <button
             type="button"
             class="btn-close"
@@ -81,8 +83,12 @@
                 <td>Designations</td>
                 <td>
                   <ul class="list-group list-group-flush">
-                    <li class="list-group-item" v-for="desg in viewModalDept['desginations']" v-bind:key="desg.id">
-                      {{desg.designation}}
+                    <li
+                      class="list-group-item"
+                      v-for="desg in viewModalDept['designations']"
+                      v-bind:key="desg.id"
+                    >
+                      {{ desg.designation }}
                     </li>
                   </ul>
                 </td>
@@ -162,15 +168,19 @@
               </div>
             </div>
             <hr class="text-primary" />
-            <div class="row border p-1 align-items-center">
-              <div class="col-10">Manager</div>
+            <div
+              class="row border p-1 align-items-center"
+              v-for="desg in editModalDept['designations']"
+              :key="desg.id"
+            >
+              <div class="col-10">{{ desg.designation }}</div>
               <div class="col-1">
                 <button class="btn btn-sm btn-info">
                   <i class="fas fa-edit"></i>
                 </button>
               </div>
               <div class="col-1">
-                <button class="btn btn-sm btn-danger">
+                <button class="btn btn-sm btn-danger" @click="removeDesg(desg)">
                   <i class="fas fa-minus-circle"></i>
                 </button>
               </div>
@@ -241,7 +251,14 @@
           >
             Close
           </button>
-          <button type="button" class="btn btn-danger">Confirm</button>
+          <button
+            type="button"
+            class="btn btn-danger"
+            data-bs-dismiss="modal"
+            @click="confDeleteDept"
+          >
+            Confirm
+          </button>
         </div>
       </div>
     </div>
@@ -270,11 +287,12 @@ export default {
       viewModalDept: {
         id: -1,
         dept_name: "",
-        desginations: [],
+        designations: [],
       },
       editModalDept: {
         id: -1,
         dept_name: "",
+        designations: [],
       },
       delModalDept: {
         id: -1,
@@ -305,10 +323,10 @@ export default {
   methods: {
     openViewModal(dept) {
       this.viewModalDept = dept;
-      this.viewModalDept.desginations = [];
+      this.viewModalDept.designations = [];
       for (let i = 0; i < this.deptdesg.length; i++) {
         if (this.deptdesg[i].dept_id == dept.id) {
-          this.viewModalDept.desginations.push(this.deptdesg[i]);
+          this.viewModalDept.designations.push(this.deptdesg[i]);
         }
       }
     },
@@ -316,8 +334,29 @@ export default {
       this.delModalDept = dept;
       //   console.log(employee);
     },
+    confDeleteDept() {
+      DepartmentService.deleteDepartment(this.delModalDept.id).then(
+        async (resp) => {
+          if (resp.status == 200) {
+            // let datastr = await resp.text();
+            this.departments = this.departments.filter(
+              (dpt) => dpt.id != this.delModalDept.id
+            );
+          } else {
+            alert("Error / Department in use!");
+          }
+        }
+      );
+    },
     editDept(dept) {
       this.editModalDept = { ...dept };
+      this.editModalDept.designations = [];
+      for (let i = 0; i < this.deptdesg.length; i++) {
+        if (this.deptdesg[i].dept_id == dept.id) {
+          this.editModalDept.designations.push(this.deptdesg[i]);
+        }
+      }
+      console.log(this.editModalDept);
     },
     checkError() {
       const errKeys = Object.keys(this.inputErrors);
@@ -347,6 +386,20 @@ export default {
     saveDepartment() {
       //check if name already exists
       this.checkError();
+      DepartmentService.updateDepartment(this.editModalDept.id, this.editModalDept).then(async (resp) => {
+        if (resp.status == 200) {
+          // let datastr = await resp.text();
+          for(let i=0; i<this.departments.length; i++){
+            if(this.departments[i].id == this.editModalDept.id) {
+              this.departments[i] = {...this.editModalDept};
+              alert('Department updated!');
+              break;
+            }
+          }
+        } else {
+          alert('Error in updating!');
+        }
+      });
     },
     checkDesg() {
       if (this.newDesg) {
@@ -364,6 +417,31 @@ export default {
       }
     },
     addNewDesg() {},
+    updateDesg() {},
+    removeDesg(desg) {
+      if (!confirm(`Are you sure you want to remove '${desg.designation}'`)) {
+        return;
+      }
+      DeptDesgService.deleteDeptDesg(desg.id).then(async (resp) => {
+        if (resp.status == 200) {
+          let datastr = await resp.text();
+          this.deptdesg = JSON.parse(datastr);
+          this.editModalDept.designations =
+            this.editModalDept.designations.filter((dg) => dg.id != desg.id);
+          for (let i = 0; i < this.departments.length; i++) {
+            if (this.departments[i].id == this.editModalDept.id) {
+              this.departments[i].designations = [
+                ...this.editModalDept.designations,
+              ];
+              break;
+            }
+          }
+        } else {
+          // show error here
+          alert("Error deleting!");
+        }
+      });
+    },
   },
 };
 </script>

@@ -9,6 +9,14 @@ class DeptDesgService {
             }
         });
     }
+    static deleteDeptDesg(id) {
+        return fetch(base_url+'deptdesg/'+id, {
+            method: 'DELETE',
+            headers: {
+                'Content-type': 'application/json'
+            }
+        });
+    }
 }
 
 module.exports = DeptDesgService;

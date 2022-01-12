@@ -9,6 +9,23 @@ class DepartmentService {
             }
         });
     }
+    static updateDepartment(id, data) {
+        return fetch(base_url+'department/'+id, {
+            method: 'PATCH',
+            headers: {
+                'Content-type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        });
+    }
+    static deleteDepartment(id) {
+        return fetch(base_url+'department/'+id, {
+            method: 'DELETE',
+            headers: {
+                'Content-type': 'application/json'
+            }
+        });
+    }
 }
 
 module.exports = DepartmentService;

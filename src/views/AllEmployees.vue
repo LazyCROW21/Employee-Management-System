@@ -95,16 +95,14 @@
               </tr>
               <tr>
                 <td>Department</td>
-                <td>: {{ this.departments[this.viewModalEmp["dept_id"]] }}</td>
+                <td>: {{ getDepartment(this.viewModalEmp["dept_id"]) }}</td>
               </tr>
               <tr>
                 <td>Designation</td>
                 <td>
                   :
                   {{
-                    this.deptdesg[this.viewModalEmp["designation_id"]][
-                      "designation"
-                    ]
+                    getDesignation(this.viewModalEmp["designation_id"])
                   }}
                 </td>
               </tr>
@@ -419,8 +417,8 @@ export default {
         email: "",
       },
       employees: [],
-      departments: {},
-      deptdesg: {},
+      departments: [],
+      deptdesg: [],
       deptdesgSelect: [],
       empEditResp: false,
     };
@@ -432,7 +430,7 @@ export default {
           let datastr = await resp.text();
           this.employees = JSON.parse(datastr);
         } else {
-          // show error here
+          alert('Error fetching all employees');
         }
       })
       .catch((err) => {
@@ -441,27 +439,17 @@ export default {
     DepartmentService.getAllDepartments().then(async (resp) => {
       if (resp.status == 200) {
         let datastr = await resp.text();
-        let deptArr = JSON.parse(datastr);
-        for (let i = 0; i < deptArr.length; i++) {
-          this.departments[deptArr[i].id] = deptArr[i].dept_name;
-        }
+        this.departments = JSON.parse(datastr);
       } else {
-        // show error here
+        alert('Error fetching all departments');
       }
     });
     DeptDesgService.getAllDeptDesg().then(async (resp) => {
       if (resp.status == 200) {
         let datastr = await resp.text();
-        let deptdesgArr = JSON.parse(datastr);
-        for (let i = 0; i < deptdesgArr.length; i++) {
-          this.deptdesg[deptdesgArr[i].id] = {
-            id: deptdesgArr[i].id,
-            designation: deptdesgArr[i].designation,
-            dept_id: deptdesgArr[i].dept_id,
-          };
-        }
+        this.deptdesg = JSON.parse(datastr);
       } else {
-        // show error here
+        alert('Error fetching all designation');
       }
     });
   },
@@ -479,6 +467,22 @@ export default {
     viewEMP(employee) {
       this.viewModalEmp = employee;
       this.empEditResp = false;
+    },
+    getDepartment(dept_id) {
+      for(let i=0; i<this.departments.length; i++) {
+        if(this.departments[i].id == dept_id) {
+          return this.departments[i].dept_name;
+        }
+      }
+      return '---';
+    },
+    getDesignation(desg_id) {
+      for(let i=0; i<this.deptdesg.length; i++) {
+        if(this.deptdesg[i].id == desg_id) {
+          return this.deptdesg[i].designation;
+        }
+      }
+      return '---';
     },
     confDeleteEMP(employee) {
       this.delModalEmp = employee;

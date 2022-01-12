@@ -68,10 +68,13 @@
             v-model="this.addEmp['dept_id']"
             @change="checkDept"
           >
-            <option value="1">One</option>
-            <option value="2">Two</option>
-            <option value="3">Three</option>
+            <option v-for="dept in departments" :key="dept.id" :value="dept.id">
+              {{ dept.dept_name }}
+            </option>
           </select>
+          <p class="err-text" v-if="this.inputErrors.dept_id">
+            {{ this.inputErrors.dept_id }}
+          </p>
         </div>
       </div>
       <div class="row p-2 align-items-center">
@@ -82,10 +85,13 @@
             v-model="this.addEmp['designation_id']"
             @change="checkDesg"
           >
-            <option value="1">One</option>
-            <option value="2">Two</option>
-            <option value="3">Three</option>
+            <option v-for="desg in deptdesg[this.addEmp['dept_id']]" :key="desg.id" :value="desg.id">
+              {{ desg.designation }}
+            </option>
           </select>
+            <p class="err-text" v-if="this.inputErrors.designation_id">
+            {{ this.inputErrors.designation_id }}
+          </p>
         </div>
       </div>
       <div class="row p-2 align-items-center">
@@ -121,6 +127,9 @@
 
 <script>
 import NavBar from "@/components/NavBar.vue";
+import EmployeeService from "@/services/EmployeeService.js";
+import DepartmentService from "@/services/DepartmentService.js";
+import DeptDesgService from "@/services/DeptDesgService.js";
 
 export default {
   name: "AddEmployee",
@@ -130,43 +139,71 @@ export default {
   data() {
     return {
       isFormValid: false,
+      departments: [],
+      deptdesg: {},
       addEmp: {
         first_name: "",
         last_name: "",
         phone: "",
         email: "",
-        dept_id: "",
-        designation_id: "",
+        dept_id: -1,
+        designation_id: -1,
         salary: 0,
       },
       inputErrors: {
-        first_name: false,
-        last_name: false,
-        phone: false,
-        email: false,
-        dept_id: false,
-        designation_id: false,
-        salary: false,
+        first_name: null,
+        last_name: null,
+        phone: null,
+        email: null,
+        dept_id: null,
+        designation_id: null,
+        salary: null,
       },
     };
+  },
+  beforeMount: function () {
+    DepartmentService.getAllDepartments().then(async (resp) => {
+      if (resp.status == 200) {
+        let datastr = await resp.text();
+        this.departments = JSON.parse(datastr);
+      } else {
+        alert("Error fetching departments!");
+      }
+    });
+    DeptDesgService.getAllDeptDesg().then(async (resp) => {
+      if (resp.status == 200) {
+        let datastr = await resp.text();
+        let deptdesgArr = JSON.parse(datastr);
+        for (let i = 0; i < deptdesgArr.length; i++) {
+          if (this.deptdesg[deptdesgArr[i].dept_id]) {
+            this.deptdesg[deptdesgArr[i].dept_id].push(deptdesgArr[i]);
+          } else {
+            this.deptdesg[deptdesgArr[i].dept_id] = [deptdesgArr[i]];
+          }
+        }
+      } else {
+        alert("Error fetching designations!");
+      }
+    });
   },
   methods: {
     checkError() {
       const errKeys = Object.keys(this.inputErrors);
       for (let i = 0; i < errKeys.length; i++) {
-        if (this.inputErrors[errKeys[i]]) {
+        if (this.inputErrors[errKeys[i]] == null || this.inputErrors[errKeys[i]]) {
           // console.log(this.inputErrors[errKeys[i]]);
           this.isFormValid = false;
-          return;
+          return true;
         }
       }
       this.isFormValid = true;
+      return false;
     },
     checkFirstName() {
       if (this.addEmp.first_name) {
         this.addEmp.first_name = this.addEmp.first_name.trim();
         if (
-          this.addEmp.first_name.length < 0 ||
+          this.addEmp.first_name.length < 1 ||
           this.addEmp.first_name.length > 64
         ) {
           this.inputErrors.first_name = "First name should 1 to 64 characters";
@@ -228,7 +265,7 @@ export default {
       this.checkError();
     },
     checkDept() {
-      if (this.addEmp.dept_id) {
+      if (this.addEmp.dept_id && this.addEmp.dept_id != -1) {
         if (isNaN(this.addEmp.dept_id)) {
           this.inputErrors.dept_id = "Invalid department selected";
         } else {
@@ -240,7 +277,7 @@ export default {
       this.checkError();
     },
     checkDesg() {
-      if (this.addEmp.designation_id) {
+      if (this.addEmp.designation_id && this.addEmp.designation_id != -1) {
         if (isNaN(this.addEmp.designation_id)) {
           this.inputErrors.designation_id = "Invalid designation selected";
         } else {
@@ -264,7 +301,33 @@ export default {
       this.checkError();
     },
     submitEmployee() {
-      this.checkError();
+      if (this.checkError()) {
+        return;
+      }
+      this.addEmp.dept_id = parseInt(this.addEmp.dept_id);
+      this.addEmp.designation_id = parseInt(this.addEmp.designation_id);
+      EmployeeService.addEmployee(this.addEmp)
+        .then(async (resp) => {
+          if (resp.status == 200) {
+            // let datastr = await resp.text();
+            this.addEmp = {
+              first_name: "",
+              last_name: "",
+              phone: "",
+              email: "",
+              dept_id: -1,
+              designation_id: -1,
+              salary: 0,
+            };
+            this.isFormValid = false;
+            alert("Employee Added!");
+          } else {
+            alert("Error Adding Employee!");
+          }
+        })
+        .catch((err) => {
+          console.error(err);
+        });
     },
   },
 };

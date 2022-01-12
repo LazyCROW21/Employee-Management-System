@@ -9,6 +9,15 @@ class EmployeeService {
             }
         });
     }
+    static addEmployee(data) {
+        return fetch(base_url+'employee', {
+            method: 'POST',
+            headers: {
+                'Content-type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        });
+    }
     static updateEmployee(id, data) {
         return fetch(base_url+'employee/'+id, {
             method: 'PATCH',

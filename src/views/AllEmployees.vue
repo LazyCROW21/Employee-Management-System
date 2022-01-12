@@ -100,7 +100,12 @@
               <tr>
                 <td>Designation</td>
                 <td>
-                  : {{ this.deptdesg[this.viewModalEmp["designation_id"]]['designation'] }}
+                  :
+                  {{
+                    this.deptdesg[this.viewModalEmp["designation_id"]][
+                      "designation"
+                    ]
+                  }}
                 </td>
               </tr>
               <tr>

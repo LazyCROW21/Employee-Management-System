@@ -314,7 +314,7 @@ export default {
         let datastr = await resp.text();
         this.departments = JSON.parse(datastr);
       } else {
-        // show error here
+        alert('Error fetching all departments');
       }
     });
     DeptDesgService.getAllDeptDesg().then(async (resp) => {
@@ -322,7 +322,7 @@ export default {
         let datastr = await resp.text();
         this.deptdesg = JSON.parse(datastr);
       } else {
-        // show error here
+        alert('Error fetching all designation');
       }
     });
   },

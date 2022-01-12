@@ -9,6 +9,24 @@ class DeptDesgService {
             }
         });
     }
+    static addDeptDesg(data) {
+        return fetch(base_url+'deptdesg', {
+            method: 'POST',
+            headers: {
+                'Content-type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        });
+    }
+    static updateDeptDesg(id, data) {
+        return fetch(base_url+'deptdesg/'+id, {
+            method: 'PATCH',
+            headers: {
+                'Content-type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        });
+    }
     static deleteDeptDesg(id) {
         return fetch(base_url+'deptdesg/'+id, {
             method: 'DELETE',

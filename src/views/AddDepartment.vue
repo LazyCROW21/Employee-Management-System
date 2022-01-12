@@ -35,6 +35,7 @@
 
 <script>
 import NavBar from "@/components/NavBar.vue";
+import DepartmentService from "@/services/DepartmentService.js";
 
 export default {
   name: "AddDepartment",
@@ -57,12 +58,12 @@ export default {
       const errKeys = Object.keys(this.inputErrors);
       for (let i = 0; i < errKeys.length; i++) {
         if (this.inputErrors[errKeys[i]]) {
-          // console.log(this.inputErrors[errKeys[i]]);
           this.isFormValid = false;
-          return;
+          return true;
         }
       }
       this.isFormValid = true;
+      return false;
     },
     checkDeptName() {
       if (this.addDept.dept_name) {
@@ -79,8 +80,18 @@ export default {
       this.checkError();
     },
     submitDepartment() {
-      //check if name already exists
-      this.checkError();
+      if(this.checkError()) {
+        return;
+      }
+      DepartmentService.addDepartment(this.addDept).then(async (resp) => {
+        if (resp.status == 200) {
+          // let datastr = await resp.text();
+          this.addDept = { dept_name: "" };
+          alert("Department Added !");
+        } else {
+          alert("Error / Department Already Exist !");
+        }
+      });
     },
   },
 };

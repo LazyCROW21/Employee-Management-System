@@ -173,9 +173,15 @@
               v-for="desg in editModalDept['designations']"
               :key="desg.id"
             >
-              <div class="col-10">{{ desg.designation }}</div>
+              <div :id="'desgEdit-' + desg.id" class="col-10">
+                {{ desg.designation }}
+              </div>
               <div class="col-1">
-                <button class="btn btn-sm btn-info">
+                <button
+                  :id="'desgEditBtn-' + desg.id"
+                  class="btn btn-sm btn-info"
+                  @click="toggleEdit(desg)"
+                >
                   <i class="fas fa-edit"></i>
                 </button>
               </div>
@@ -332,7 +338,6 @@ export default {
     },
     deleteDept(dept) {
       this.delModalDept = dept;
-      //   console.log(employee);
     },
     confDeleteDept() {
       DepartmentService.deleteDepartment(this.delModalDept.id).then(
@@ -356,13 +361,11 @@ export default {
           this.editModalDept.designations.push(this.deptdesg[i]);
         }
       }
-      console.log(this.editModalDept);
     },
     checkError() {
       const errKeys = Object.keys(this.inputErrors);
       for (let i = 0; i < errKeys.length; i++) {
         if (this.inputErrors[errKeys[i]]) {
-          // console.log(this.inputErrors[errKeys[i]]);
           this.isFormValid = false;
           return;
         }
@@ -386,18 +389,21 @@ export default {
     saveDepartment() {
       //check if name already exists
       this.checkError();
-      DepartmentService.updateDepartment(this.editModalDept.id, this.editModalDept).then(async (resp) => {
+      DepartmentService.updateDepartment(
+        this.editModalDept.id,
+        this.editModalDept
+      ).then(async (resp) => {
         if (resp.status == 200) {
           // let datastr = await resp.text();
-          for(let i=0; i<this.departments.length; i++){
-            if(this.departments[i].id == this.editModalDept.id) {
-              this.departments[i] = {...this.editModalDept};
-              alert('Department updated!');
+          for (let i = 0; i < this.departments.length; i++) {
+            if (this.departments[i].id == this.editModalDept.id) {
+              this.departments[i] = { ...this.editModalDept };
+              alert("Department updated!");
               break;
             }
           }
         } else {
-          alert('Error in updating!');
+          alert("Error in updating!");
         }
       });
     },
@@ -416,8 +422,57 @@ export default {
         this.isNewDesgValid = false;
       }
     },
-    addNewDesg() {},
-    updateDesg() {},
+    addNewDesg() {
+      const data = {
+        dept_id: this.editModalDept.id,
+        designation: this.newDesg,
+      };
+      DeptDesgService.addDeptDesg(data).then(async (resp) => {
+        if (resp.status == 200) {
+          let datastr = await resp.text();
+          let addedDesg = JSON.parse(datastr);
+          this.editModalDept.designations.push(addedDesg);
+          this.deptdesg.push(addedDesg);
+          this.newDesg = "";
+          this.isNewDesgValid = false;
+        } else {
+          // show error here
+          alert("Invalid Input / Error Adding!");
+        }
+      });
+    },
+    toggleEdit(desg) {
+      let inpContainer = document.getElementById("desgEdit-" + desg.id);
+      let editBtn = document.getElementById("desgEditBtn-" + desg.id);
+      if (inpContainer.classList.contains("onEdit")) {
+        let desgInp = inpContainer.children[0];
+        if (desgInp.value == "") {
+          alert("New title is required!");
+          return;
+        }
+        inpContainer.innerHTML = desg.designation;
+        editBtn.className = "btn btn-sm btn-info";
+        editBtn.innerHTML = '<i class="fas fa-edit"></i>';
+        inpContainer.classList.remove("onEdit");
+        DeptDesgService.updateDeptDesg(desg.id, {
+          designation: desgInp.value,
+        }).then(async (resp) => {
+          if (resp.status == 200) {
+            desg.designation = desgInp.value;
+            inpContainer.innerHTML = desg.designation;
+          } else {
+            alert('Error updating!')
+          }
+        });
+      } else {
+        inpContainer.innerHTML = `
+          <input id="desgInp-${desg.id}" type="text" class="form-control" value="${desg.designation}">
+        `;
+        editBtn.className = "btn btn-sm btn-success";
+        editBtn.innerHTML = '<i class="fas fa-save"></i>';
+        inpContainer.classList.add("onEdit");
+      }
+    },
     removeDesg(desg) {
       if (!confirm(`Are you sure you want to remove '${desg.designation}'`)) {
         return;
